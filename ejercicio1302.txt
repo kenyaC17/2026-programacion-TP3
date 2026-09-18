@@ -1,0 +1,35 @@
+# funciones.py:
+def prueba(a,b): # -> define la función prueba que recibe los parámetros a y b
+    a = a + 1 # -> incrementa el valor de a, le suma 1
+    b = b + 2 # -> incrementa el valor de b, le suma 2
+    return(a,b) # -> retorna los valores de a y b
+
+
+# programa.py:
+from funciones import * # -> importa todas las funciones del archivo funciones.py, lo cual es una mala práctica, deberia ser from funciones import prueba
+a = int(input("Ingrese un numero entero: ")) # -> solicita ingresar un entero y la guarda en la variable a
+b = int(input("Ingrese un numero entero: ")) # -> solicita ingresar un entero y la guarda en la variable b
+
+for i in range(3): # -> bucle for que se ejecuta 3 veces
+    a, b = (prueba(a,b)) # -> llama a la funcion prueba y guarda lo que retorna directamente en a y b
+    a = a + 2 # -> incrementa el valor de a, le suma 2
+    b = b + 2 # -> incrementa el valor de b, le suma 2
+
+#explicacion de que hace en cada vuelta:
+""" a = 2 b = 3
+
+1- vuelta: se llama a prueba(2,3). Como los parametros de la funcion se llaman a y b (igual que las variables globales), dentro de la
+funcion se usan copias locales, no las variables de afuera. A toma el valor de 2 y le suma 1, por lo 
+que A = 3. B toma el valor de 3 y le suma 2, por lo que B = 5. La funcion retorna (3,5). Como esta vez el resultado SI se guarda con 
+a, b = prueba(a,b), las variables globales a y b pasan a valer a = 3 y b = 5. Despues, a y b se 
+incrementan (a = a + 2, b = b + 2): a pasa de 3 a 5, y b pasa de 5 a 7
+
+2- vuelta: se llama a prueba(5,7). A toma el valor de 5 y le suma 1, por lo que A = 6. B toma el valor de 7 y le suma 2, 
+por lo que B = 9. La funcion retorna (6,9). Se guarda en las globales: a = 6, b = 9. Despues, a y b se incrementan: 
+a pasa de 6 a 8, y b pasa de 9 a 11
+
+3- vuelta: se llama a prueba(8,11). A toma el valor de 8 y le suma 1, por lo que A = 9. B toma el valor de 11 y le 
+suma 2, por lo que B = 13. La funcion retorna (9,13). Se guarda en las globales: a = 9, b = 13. Despues, a y b se 
+incrementan: a pasa de 9 a 11, y b pasa de 13 a 15
+
+al terminar las 3 vueltas, a = 11 y b = 15 """
