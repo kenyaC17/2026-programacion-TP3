@@ -1,0 +1,38 @@
+# funciones.py:
+def prueba(x,y): # -> define la función pruba que recibe los parametros x e y
+    print(a,b) # -> intenta imprimir a y b pero no son parametros de la funcion, no hay locales con ese nombre, busca en el global de funciones.py y ahi tampoco estan, entonces da error
+    x = x + 1 # -> esta linea debería sumarle 1 a x, pero no se llega a ejecutar porque el programa ya fallo antes
+    y = y + 2 # -> esta linea debería sumarle 2 a y, pero tampoco se llega a ejecutar
+    return(x,y) # -> deberia retornar x e y, pero no se llega a esta parte del codigo
+
+
+# programa.py:
+from funciones import * # -> importa todas las funciones del archivo funciones.py, lo cual es una mala práctica, deberia ser from funciones import prueba
+a = int(input("Ingrese un número entero: ")) # -> solicita ingresar un entero y la guarda en la variable a, esta a vive en programa.py
+b = int(input("Ingrese un número entero: ")) # -> solicita ingresar un entero y la guarda en la variable b, esta b tambien vive en programa.py
+
+for i in range(3): # -> bucle for que se ejecuta 3 veces
+    print(prueba(a,b)) # -> llama a la funcion prueba, que falla ya en su primera linea
+    a = a + 2 # -> deberia incrementar a pero no llega hasta aqui
+    b = b + 2 # -> deberia incrementar b pero lo mismo de arriba
+
+#expliocacion de que hace en cada vuelta:
+""" a = 2 b = 3
+
+prueba esta escrita en funciones.py. a y b se crearon en programa.py, con los input(). El from funciones import * 
+no une esos dos espacios, solo trae el nombre de la funcion prueba para poder usarla en programa.py, pero la 
+funcion sigue "perteneciendo" a funciones.py y ahi busca sus variables globales si necesita alguna.
+
+Arranca el for, i=0. Se llama a print(prueba(a,b)), y antes de imprimir hay que resolver prueba(a,b): se entra 
+a la funcion con x=2, y=3. son los valores que ingreso el usuario 
+
+La primera linea dentro es print(a,b). Se busca a: no es parametro de prueba (los parametros son x e y), no hay 
+ninguna variable local que se llame a. Sube a buscar en el global, pero es el global de funciones.py, el modulo 
+donde prueba fue definida, y ahi a no existe (a esta en programa.py, otro modulo). No la encuentra en ningun lado 
+al que tenga acceso. Ahi mismo se corta todo con un error de nombre no definido (NameError).
+
+El programa termina en ese instante, en la primera vuelta del for. No se llega a ejecutar x = x + 1, tampoco 
+y = y + 2, ni el return, ni el print de afuera, y muchisimo menos las otras 2 vueltas. No hay ninguna salida 
+en pantalla, solo el error. 
+este ejercicio lo reice gracias al ultimo ejercicio ya que yo considere que funciones.py y programa.py compartian el mismo modulo y no es asi, tampoco esta implicito
+en la explicacion de los ejercicios ni en la teoria. al menos yo no lo vi, pero me di cuenta investigando un poco :)"""
