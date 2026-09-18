@@ -1,0 +1,86 @@
+# funciones.py
+def validar_dni(dni): # -> define la funcion validar_dni que recibe el parametro dni (esta es una copia local, distinta del dni global de programa.py)
+    cantidad = 0 # -> Crea la variable cantidad y la inicializa en 0
+    while dni != 0: # -> mientras dni sea distinto de 0, repite el bloque
+        cantidad = cantidad + 1 #-> incrementa cantidad en 1 en cada vuelta
+        dni = dni // 10 # -> descarta el ultimo digito de dni con division entera
+    return cantidad == 8 # -> retorna True si cantidad quedo en 8, False si no  
+
+
+# programa.py:
+from funciones import * # -> importa todas las funciones del archivo funciones.py que es una mala practica
+mayor = -1 # -> crea la variable mayor y la inicializa en -1, como punto de partida
+dni = int(input("DNI: ")) #-> solicita el primer DNI y lo guarda en la variable dni
+while dni != 0: # -> mientras el dni ingresado sea distinto de 0, repite el bloquw  
+    if validar_dni(dni): # -> llama a validar_dni con el dni actual; si retorna Tru entra al if
+        nombre = input("Nombre: ") # -> solicita el nombre y lo guarda en la variable nombre
+        edad = int(input("Edad: ")) # - > solicita la edad y la guarda en la variable edad
+        if edad > mayor: # -> compara la edad ingresada con el valor actual de mayor
+            mayor = edad # -> si es mayor, actualiza mayor con esa edad
+            nombre_mayor = nombre # -> y guarda el nombre correspondiente en nombre_mayor
+    else: # -> si validar_dni retorno False
+        print("DNI invalido. Vuelva a ingresar.") # - > Imprime el mensaje de DNI invalido
+    dni = int(input("DNI: ")) # -> vuelve a pedir un DNI
+print("Nombre de la persona mayor:", nombre_mayor) # -> al salir del while, imprime el nombre guardado en nombre_mayor
+
+#explicacion de que hace como si fuera para mi abuelita
+""" mayor = -1 al principio
+dato: nombre_mayor nunca se inicializa antes del primer if. Si el primer DNI ingresado fuera invalido, 
+o si se ingresara 0 de entrada sin cargar a nadie, el print final rompería  porque 
+nombre_mayor jamas llegaria a crearse. Es una debilidad del programa :)
+
+1- se solicita el DNI al usuario que ingresa 34567890. Se evalua la condicion del while: 34567890 != 0 -> True -> entra al while principal.
+Se llama a validar_dni(34567890). Dentro de la funcion, el dni que recibe la funcion es una copia local, no tiene relacion con el dni 
+global de programa.py (aunque se llamen igual e ahi la trampa). cantidad arranca en 0 y dni (local) toma el valor 34567890.
+
+Se evalua dni != 0 con dni = 34567890, da True, entonces cantidad pasa a 1 y dni queda en 3456789. Se evalua de nuevo, 3456789 != 0 
+da True, cantidad pasa a 2 y dni queda en 345678. Se evalua otra vez, 345678 != 0 da True, cantidad pasa a 3 y dni queda en 34567. 
+Sigue evaluando: 34567 != 0 da True, cantidad pasa a 4 y dni queda en 3456. Despues 3456 != 0 da True, cantidad pasa a 5 y dni queda 
+en 345. Luego 345 != 0 da True, cantidad pasa a 6 y dni queda en 34. Despues 34 != 0 da True, cantidad pasa a 7 y dni queda en 3. 
+Por ultimo 3 != 0 da True, cantidad pasa a 8 y dni queda en 0. Ahi se evalua dni != 0 de nuevo, pero como dni ya es 0, da False, 
+y el while interno termina. (esto de ser interprete cansa)
+
+La funcion retorna cantidad == 8. Se evalua: 8 == 8 -> True. Retorna True.
+
+Como validar_dni devolvio True, se evalua el if: True -> entra al if. Se pide el nombre: se ingresa Maria Gimenez, y se guarda en la variable nombre. 
+Se pide la edad: se ingresa 18, y se guarda en la variable edad. Se evalua la condicion edad > mayor: 18 > -1 -> True -> entra al if interno.
+mayor pasa a valer 18, y nombre_mayor toma el valor de nombre, que es Maria Gimenez. Se vuelve a pedir un DNI.
+
+2- se ingresa 28907678. Se evalua 28907678 != 0 -> True -> entra al while principal. Se llama a validar_dni(28907678). 
+Se repite el conteo de digitos de la misma forma (evaluando dni != 0 en cada vuelta antes de restar): 2-8-9-0-7-6-7-8, 
+dando 8 vueltas, entonces cantidad termina en 8. La funcion retorna cantidad == 8: se evalua 8 == 8 -> True. Retorna True.
+
+Como validar_dni devolvio True, se evalua el if: True -> entra al if. Se pide el nombre: se ingresa Carlos Alberto Sanchez. Se pide la edad: se ingresa 21.
+Se evalua la condicion edad > mayor: 21 > 18 -> True -> entra al if interno. mayor pasa a valer 21, y nombre_mayor toma el valor de nombre, 
+que es Carlos Alberto Sanchez. Se vuelve a pedir un DNI.
+
+3- se ingresa 0. Se evalua la condicion del while principal: 0 != 0 -> False -> no entra al while principal y el ciclo termina.
+
+Por ultimo, se imprime el mensaje "Nombre de la persona mayor:" junto con el contenido de nombre_mayor, que quedo en Carlos Alberto Sanchez, 
+porque su edad (21) fue la mas alta entre las personas ingresadas.
+
+
+
+2. ¿Que sucede si se ingresa el numero de DNI 345678233?
+
+""" Se pide un DNI. Se Ingresa  345678233. Se evalua la condicion del while: 345678233 != 0 -> True -> entra al while 
+principal.
+Se llama a validar_dni(345678233). Dentro de la funcion, el dni recibido es una copia local. cantidad arranca en 
+0 y dni (local) toma el valor 345678233.
+
+Se evalua dni ! = 0 cpn dni = 345678233, da True,  entonces cantidad pasa a 1 y dni queda en 34567823. Se evalua de nuevo, 
+34567823 != 0 da True, cantidad pasa a 2 y dni queda en 3456782. Se evalua otra vez, 3456782 != 0 da True, cantidad pasa 
+a 3 y dni queda en 345678. sigue evaluando: 345678 != 0 da True, cantidad pasa a 4 y dni queda en 34567. Despues 
+34567 != 0 da True, cantidad pasa a 5 y dni queda en 3456. Luego 3456 != 0 da True, cantidad pasa a 6 y dni queda en 345. 
+Despues 345 != 0 da True, cantidad pasa a 7 y dni queda en 34. Luego 34 != 0 da True, cantidad pasa a 8 y dni queda en 3. 
+Por ultimo 3 != 0 da True, cantidad pasa a 9 y dni queda en 0. Ahi se  evalua dni !=0 de nuevo, pero como dni ya es 0, 
+da False, y el while interno termina por fin. 
+
+La funcion retorna cantidad == 8. Se evalua: 9 == 8 - > False. Retorna False.
+
+Como validar_dni devolvio False, se evalua el if: False -> no entra al if, entra al else. Se imprime el mensaje 
+"DNI invalido. Vuelva a ingresar.". No se pide nombre ni edad para este DNI, 
+y esta persona no se tiene en cuenta para calcular mayor ni nombre_mayor.
+
+Se vuelve a pedir un DNI, y el programa sigue esperando un nuevo valor para 
+continuar o para terminar (si se ingresa 0). """
