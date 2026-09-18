@@ -1,0 +1,85 @@
+# 1 -----
+# funciones.py:
+def escribe_media(): # -> define la funcion escribe_media, sin parametros
+    media = (a + b) / 2 # -> busca a y b: no hay locales, sube al global... pero es el global de funciones.py, donde a y b NO existen
+    print("La media de ", a, " y", b, " es: ", media) # -> nunca llega a esta linea, el programa falla en la linea anterior
+    return # -> esto tampoco se llega a ejecutar 
+
+# programa.py:
+from funciones import * # -> importa escribe_media al espacio de nombres de programa.py
+a = 3 # -> crea la variable global a en programa.py 
+b = 5 # -> crea la variable global b en programa.py 
+escribe_media() # -> llama a la funcion, que intenta usar a y b y falla, todo mal 
+
+# 2 -----
+# funciones.py:
+def escribe_media(x, y): # -> define escribe_media, esta vez recibe x e y como parametros
+    media = (x + y) / 2 # -> usa los parametros locales x e y. calcula la media = 4.0
+    print("La media de ", a, " y ", b, " es: ", media) # -> pero aca busca a y b y no existen en el global de funciones.py
+    return # -> nunca se llega a ejecutar, el programa fallaa en la linea anterior  
+
+# programa.py:
+from funciones import * # -> importa escribe_media al espacio de nombres de programa.py
+a = 3 # -> crea la variable global a en programa.py 
+b = 5 # -> crea la variable global b en programa.py 
+escribe_media(a, b) # -> llama a la funcion pasandole a y b como argumentos; rompe igual por el print interno
+
+
+#    3 -----
+# funciones.py:
+def calcula_media(x, y): # -> define calcula_media, recibe x e y como parametross
+    resultado = (x + y) / 2 # -> usa los parametros locales x e y, calcula resultado = 4.0
+    return resultado # -> retorna el resultado calculado, no depende de ninguna variable global
+
+# programa.py:
+from funciones import * # -> importa calcula_media al espacio de nombres de programa.py
+a = 3 # -> crea la variable global a en programa.py
+b = 5 # -> crea la variable global b en programa.py
+print("La media de ", a, " y ", b, " es: ", calcula_media(a, b)) # -> esta linea esta en programa.py, entonces a y b se consiguen sin problema;
+ calcula_media(a,b) solo hace su cuenta con x,y y devuelve 4.0
+
+#explicacion paso a paso:
+""" OPCION 1:
+
+Se lee from funciones import *, y con eso escribe_media queda disponible en programa.py. Se lee a = 3, y se crea la variable a, pero
+ esta a vive en programa.py, no en funciones.py. Se lee b = 5, pasa lo mismo,
+b también queda como global de programa.py. Se lee escribe_media(), y ahí entra a la función.
+
+Dentro de la funcion, lee media = (a + b) / 2. El interprete necesita el valor de a: busca primero si hay una variable 
+local a dentro de escribe_media, no hay asi que  Sube a buscar en el espacio global, pero el espacio global que consulta una 
+funcion es el del modulo donde esa funcion fue definida: el global de funciones.py. Ahi tampoco existe a (la 
+a que existe es la de programa.py, un modulo distinto algo que me costo mucho entender jaja).  Se detiene la ejecucion 
+y arrojaria errorr por que no encuentra a. y el programa termina ahi
+
+
+OPCION 2:
+
+Se lee from funciones import *, se importa escribe_media. lee a = 3, se crea la global a en programa.py. lee b = 5, 
+se crea la global b en programa.py.  lee escribe_media(a, b), entra a la funcion pasando los valores 3 y 5.
+
+Dentro de la funcion, los parametros x e y reciben esos valores : x = 3, y = 5 (son variables locales). Lee 
+media = (x + y) / 2: se buscan x e y, esta vez si son locales y las consigue disponibles. Se calcula (3 + 5) / 2 = 4.0 
+y se guarda en media (tambien local). 
+
+Se lee print("La media de ", a, " y ", b, " es: ", media). El interprete necesita el valor de a y busca local dentro de 
+la funcion, no hay ninguna variable local llamada a porque los parametros se llaman x,y. Sube al global otra vez y Ahi a no existe. 
+ya se habia calculado bien media, pero nunca llega a imprimirse nada porque arroja error por una variable no encontrada
+
+
+OPCION 3:
+
+from funciones import * importa calcula_media. Después, a = 3 crea la global a en programa.py, y b = 5
+ hace lo mismo con b. Llegamos a print("La media de ", a, " y ", b, " es: ", calcula_media(a, b)).
+
+Antes de poder ejecutar el print, el intérprete tiene que resolver todos sus argumentos.
+ Los primeros son a y b: se buscan en el espacio donde se está ejecutando esta línea, que es programa.py. 
+ Ahí sí existen como globales (a=3, b=5), se toman esos valores directamente sin problema.
+
+El último argumento es calcula_media(a, b), que hay que resolver aparte: se suspende 
+el print y se entra a la función, pasando x = 3, y = 5 (locales). Dentro, resultado = (x + y) / 2 busca x e y, 
+que son locales y están disponibles: se calcula (3 + 5) / 2 = 4.0 y se guarda en resultado. Con return resultado, se devuelve el valor 4.0 a quien llamó a la función.
+En ningún momento esta función necesitó buscar a ni b, así que no importa en qué módulo estén definidas.
+
+Con eso ya tenemos los tres argumentos que le faltaban al print: a vale 3, b vale 5, y calcula_media(a, b) vale 4.0. 
+Ahora el intérprete retoma esa línea que había quedado suspendida esperando el resultado de la función, y con los tres valores en mano, 
+recién ahí puede ejecutar el print completo. Imprime en pantalla: La media de 3 y 5 es: 4.0
